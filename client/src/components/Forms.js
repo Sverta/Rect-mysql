@@ -1,41 +1,7 @@
 import React, { Component } from 'react';
 import { Input, MDBContainer, MDBRow, MDBCol, MDBBtn, MDBCard, MDBCardBody } from 'mdbreact';
-// import DatePickerPage from './DatePickerPage';
 
 class Forms extends Component {
-        // state = {
-        //   response: '',
-        //   post: '',
-        //   responseToPost: '',
-        // };
-        
-        // componentDidMount() {
-        //   this.callApi()
-        //     .then(res => this.setState({ response: res.express }))
-        //     .catch(err => console.log(err));
-        // }
-        
-        // callApi = async () => {
-        //   const response = await fetch('/api/hello');
-        //   const body = await response.json();
-        //   if (response.status !== 200) throw Error(body.message);
-          
-        //   return body;
-        // };
-        
-        // handleSubmit = async e => {
-        //   e.preventDefault();
-        //   const response = await fetch('/api/world', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ post: this.state.post }),
-        //   });
-        //   const body = await response.text();
-          
-    //   this.setState({ responseToPost: body });
-    // };
     constructor(props) {
         super(props);
 
@@ -43,135 +9,116 @@ class Forms extends Component {
             firstname: '',
             surname: '',
             email: '',
-            response : []
+            startDate: new Date(),
+            response: []
         };
-
-        // this.handleChange = this.handleChange.bind(this);
-        // this.handleSubmit = this.handleSubmit.bind(this);
     }
-    componentDidMount() {
-        this.callApi()
-            .then(res => this.setState({ response: res }))
-            .catch(err => console.log(err));
-    }
-
-    callApi = async () => {
-        const response = await fetch('/users');
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        console.log(body)
-        return body;
-    };
+    //  control function that gets triggered when the input control element's value changes. 
+    // The function then updates the state of the parent component and passes the new value through the value prop.
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
     }
 
-  handleSubmit = async e  => {
-      console.log('A name was submitted: ', this.state);
-      const data = { Firstname: this.state.firstname, Lastname: this.state.surname, Email: this.state.email}
-      console.log("data", data);
+    // submit form and put data to mysql
+    handleSubmit = async e => {
+        const data = { Firstname: this.state.firstname, Lastname: this.state.surname, Email: this.state.email, Date: this.state.date}
 
-      e.preventDefault();
-      const response = await fetch('/users', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data),
-      }).then(res => res.json())
-          .then(data => console.log(data))
-          .catch(err => console.log(err))
-    //   fetch('/api/user', { method: 'POST', 
+        e.preventDefault();
+        await fetch('/users', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        }).then(res => res.json())
+            .then(data => {
+                // success
+                this.setState({
+                    firstname: '',
+                    surname: '',
+                    email: '',
+                    date: '',
+                    response: []
+                });
+            })
+            .catch(err => console.log(err))
+    }
 
-    // body: JSON.stringify(data), // data can be 'string' or {object}!
+    render() {
+        return (
 
-    // headers:{ 'Content-Type': 'application/json' } })
+            <MDBContainer>
+                <MDBRow>
+                    <MDBCol md="3"></MDBCol>
+                    <MDBCol md="6">
+                        <MDBCard>
+                            <MDBCardBody>
+                                {/* form */}
+                                <form onSubmit={(e) => this.handleSubmit(e)}>
+                                    <p className="h4 text-center py-4">Sign up</p>
+                                    <div className="grey-text">
 
-    // .then(res => res.json())
+                                        <Input
+                                            label="Your name"
+                                            icon="user"
+                                            name='firstname'
+                                            type="text"
+                                            value={this.state.firstname}
+                                            onChange={e => this.handleChange(e)}
+                                            required />
 
-    // .catch(error => console.error('Error:', error))
+                                        <Input
+                                            label="Your surname"
+                                            icon="user-shield"
+                                            type="text"
+                                            name='surname'
+                                            value={this.state.surname}
+                                            onChange={e => this.handleChange(e)}
+                                            required />
 
-    // .then(response => console.log('Success:', response));
-    // e.preventDefault();
-  }
-
-  render() {
-    return (
-
-      <MDBContainer>
-        <MDBRow>
-          <MDBCol md="3"></MDBCol>
-          <MDBCol md="6">
-            <MDBCard>
-              <MDBCardBody>
-              <p>{this.state.firstname}</p>
-              
-                {/* <form onSubmit={this.handleSubmit}>
-                <p>
-                    <strong>Post to Server:</strong>
-                </p>
-                <input
-                    type="text"
-                    value={this.state.post}
-                    onChange={e => this.setState({ post: e.target.value })}
-                />
-                <button type="submit">Submit</button>
-                </form>
-                <p>{this.state.responseToPost}</p> */}
- {/* <p>{this.state}</p> */}
-                <form onSubmit={(e) => this.handleSubmit(e)}>
-                  <p className="h4 text-center py-4">Sign up</p>
-                  <div className="grey-text">
-
-                    <Input
-                      label="Your name"
-                      icon="user"
-                      name='firstname'
-                      type="text"
-                      value={this.state.firstname}
-                      onChange={e => this.handleChange(e)} />
-
-                    <Input
-                      label="Your surname"
-                      icon="user-shield"
-                      type="text"
-                      name='surname'
-                      value={this.state.surname}
-                      onChange={e => this.handleChange(e)} />
-
-                    <Input
-                      label="Your email"
-                      icon="envelope"
-                      group
-                      type="email"
-                      name='email'
-                      value={this.state.email}
-                      onChange={e => this.handleChange(e)}
-                      validate
-                      error="wrong"
-                      success="right"
-                    />
-
-
-                  </div>
-                  <div className="text-center py-4 mt-3">
-                    <MDBBtn color="cyan" type="submit">
-                      Register
+                                        <Input
+                                            label="Your email"
+                                            icon="envelope"
+                                            group
+                                            type="email"
+                                            name='email'
+                                            value={this.state.email}
+                                            onChange={e => this.handleChange(e)}
+                                            validate
+                                            error="wrong"
+                                            success="right"
+                                            required
+                                        />
+                                        <Input
+                                            icon="calendar-alt"
+                                            group
+                                            type="date"
+                                            name='date'
+                                            value={this.state.date}
+                                            onChange={e => this.handleChange(e)}
+                                            validate
+                                            error="wrong"
+                                            success="right"
+                                        />
+                                    </div>
+                                    <div className="text-center py-4 mt-3">
+                                        <MDBBtn color="cyan" type="submit">
+                                            Register
      </MDBBtn>
-                  </div>
-                </form>
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-          <MDBCol md="3"></MDBCol>
-        </MDBRow>
-      </MDBContainer>
+                                    </div>
+                                </form>
+                            </MDBCardBody>
+                        </MDBCard>
+                    </MDBCol>
+                    <MDBCol md="3"></MDBCol>
+                </MDBRow>
+            </MDBContainer>
 
-    );
-  }
+        );
+    }
 }
 
 export default Forms;

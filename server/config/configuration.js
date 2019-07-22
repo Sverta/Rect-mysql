@@ -1,5 +1,4 @@
 export default {
-
     mysql: {
         host     : 'localhost',
         user     : 'root',
